@@ -5,39 +5,56 @@ import { Link } from "react-router-dom";
 import Busqueda from "../../components/Catalogo/BarraBusqueda";
 
 function Productos() {
-// Barra de busqueda 
-const [search, setSearch] = useState("");
+  // Estado del texto que el usuario escribe en la barra de búsqueda
+  const [search, setSearch] = useState("");
 
-// Trae la lista de juegos desde el hook y guarda el estado de la página actual
-const { juegos, cargando, error } = useJuegos(200);
-const [paginaActual, setPaginaActual] = useState(1);
+  // Hook personalizado que trae hasta 200 juegos desde la API
+  // Devuelve: la lista de juegos, si está cargando, y si hubo error
+  const { juegos, cargando, error } = useJuegos(200);
 
-// Cantidad de juegos que se muestran por página
-const juegosPorPagina = 12;
+  // Estado que indica en qué página de resultados esta parado el usuario
+  const [paginaActual, setPaginaActual] = useState(1);
 
-// Este Filtra ANTES de paginar (ajusta "nombre" al campo real de la API de juegos)
-const JuegosFiltrados = juegos.filter((juego) => 
-  juego.name?.toLowerCase().includes(search.toLowerCase())
-);
+  // Cantidad fija de juegos que se muestran por página
+  const juegosPorPagina = 12;
 
-const totalPaginas = Math.ceil(JuegosFiltrados.length / juegosPorPagina); // Calcula cuántas páginas habrá según la cantidad total de juegos
-const indiceInicial = (paginaActual - 1) * juegosPorPagina; // Determina desde qué índice empieza la página actual
-const juegosPagina = JuegosFiltrados.slice(  // Obtiene solo los juegos que corresponden a la página actual
-  indiceInicial,
-  indiceInicial + juegosPorPagina
-);
+  // PASO 1: Filtrar ANTES de paginar.
+  // Se compara el texto de búsqueda (en minúsculas) contra el nombre del juego.
+  // El "?." evita un error si algún juego no trae la propiedad "name".
+  const JuegosFiltrados = juegos.filter((juego) =>
+    juego.name?.toLowerCase().includes(search.toLowerCase())
+  );
 
-// Si la página actual supera el total disponible, la ajusta a la última válida
-useEffect(() => {
-  if (paginaActual > totalPaginas && totalPaginas > 0) {
-    setPaginaActual(totalPaginas);
-  }
-}, [paginaActual, totalPaginas]);
+  // PASO 2: Calcular cuántas páginas salen del total filtrado.
+  // Ej: 50 juegos filtrados / 12 por página = 4.16 -> Math.ceil() = 5 páginas
+  const totalPaginas = Math.ceil(JuegosFiltrados.length / juegosPorPagina);
 
+  // PASO 3: Calcular desde qué índice del arreglo arranca la página actual.
+  // Página 1 -> índice 0 | Página 2 -> índice 12 | Página 3 -> índice 24 ...
+  const indiceInicial = (paginaActual - 1) * juegosPorPagina;
 
-useEffect (() => {
-  setPaginaActual(1);
-}, [search])
+  // PASO 4: Recortar el arreglo filtrado para quedarnos solo
+  // con los juegos que le corresponden a la página actual.
+  const juegosPagina = JuegosFiltrados.slice(
+    indiceInicial,
+    indiceInicial + juegosPorPagina
+  );
+
+  // EFECTO 1: Si la página actual queda "fuera de rango" (por ejemplo,
+  // estabas en la página 5 y al filtrar ahora solo hay 2 páginas),
+  // te reubica automáticamente en la última página válida.
+  useEffect(() => {
+    if (paginaActual > totalPaginas && totalPaginas > 0) {
+      setPaginaActual(totalPaginas);
+    }
+  }, [paginaActual, totalPaginas]);
+
+  // EFECTO 2: Cada vez que cambia el texto de búsqueda,
+  // se reinicia la vista a la página 1 (para no quedar "perdido"
+  // en una página que ya no tiene sentido con el nuevo filtro).
+  useEffect(() => {
+    setPaginaActual(1);
+  }, [search]);
 
   return (
     <>
@@ -51,39 +68,45 @@ useEffect (() => {
             Videojuegos disponibles en la tienda
           </p>
 
+          {/* Barra de búsqueda: recibe el valor actual y la función para actualizarlo */}
           <div className="mt-6">
-            <Busqueda value={search} onChange={setSearch}/>
+            <Busqueda value={search} onChange={setSearch} />
           </div>
 
+          {/* Mensaje mientras el hook todavía está trayendo los datos */}
           {cargando && (
             <p className="mt-10 text-center text-slate-400">
               Cargando juegos...
             </p>
           )}
 
+          {/* Mensaje si el hook devolvió un error */}
           {error && (
-            <p className="mt-10 text-center text-rose-500">
-              {error}
-            </p>
+            <p className="mt-10 text-center text-rose-500">{error}</p>
           )}
 
+          {/* Solo renderizamos el catálogo si ya no está cargando y no hay error */}
           {!cargando && !error && (
             <>
-
+              {/* Caso: la búsqueda no encontró ningún resultado */}
               {JuegosFiltrados.length === 0 && (
                 <p className="mt-10 text-center text-slate-400">
                   No se encontraron juegos con "{search}".
                 </p>
               )}
 
+              {/* Grilla de tarjetas: se van a  pintar SOLO los juegos de la página actual */}
               <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {juegosPagina.map((juego) => (
                   <GameCard key={juego.id} juego={juego} />
                 ))}
               </div>
 
+              {/* El paginador solo se muestra si hay más de 1 página */}
               {totalPaginas > 1 && (
                 <nav className="flex justify-center items-center gap-2 mt-10">
+                  {/* Botón "Anterior": resta 1 a la página actual.
+                      Se deshabilita si ya esta en la página 1 */}
                   <button
                     onClick={() => setPaginaActual((pagina) => pagina - 1)}
                     disabled={paginaActual === 1}
@@ -92,6 +115,9 @@ useEffect (() => {
                     Anterior
                   </button>
 
+                  {/* Botones numerados: Array.from genera un array de "totalPaginas"
+                      posiciones vacías, y por cada una crea un botón numerado.
+                      El botón de la página activa se pinta de otro color. */}
                   {Array.from({ length: totalPaginas }, (_, indice) => (
                     <button
                       key={indice + 1}
@@ -106,6 +132,8 @@ useEffect (() => {
                     </button>
                   ))}
 
+                  {/* Botón "Siguiente": suma 1 a la página actual.
+                      Se deshabilita si ya estamos en la última página */}
                   <button
                     onClick={() => setPaginaActual((pagina) => pagina + 1)}
                     disabled={paginaActual === totalPaginas}
@@ -119,10 +147,11 @@ useEffect (() => {
           )}
         </div>
       </section>
-            <footer className="bg-slate-900 text-slate-400 border-t border-slate-800">
+
+      {/* Footer estático con navegación y créditos del proyecto */}
+      <footer className="bg-slate-900 text-slate-400 border-t border-slate-800">
         <div className="max-w-6xl mx-auto px-6 py-12">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-
             <div>
               <Link to="/" className="inline-block">
                 <h3 className="text-white font-bold text-lg mb-3 hover:text-sky-400 transition-colors">
@@ -180,6 +209,5 @@ useEffect (() => {
     </>
   );
 }
-
 
 export default Productos;

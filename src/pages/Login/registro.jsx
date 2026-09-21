@@ -18,7 +18,7 @@ function Registro({ onClose }) {
       return 
     }
 
-    login({ email });
+    login({ email, password });
     toast.success("¡Inicio Exitoso!")
 
     setTimeout(() => {
@@ -29,15 +29,6 @@ function Registro({ onClose }) {
   return (
       <div className="min-h-screen flex items-center justify-center px-4 bg-linear-to-br bg-slate-100 dark:bg-slate-900">
         <div className="relative bg-white border dark:border-sky-950 border-sky-100 rounded-2xl p-8 sm:p-10 w-full max-w-105 shadow-[0_20px_50px_-12px_rgba(2,132,199,0.25)] dark:bg-slate-900">
-          
-          {onClose && (
-            <button
-              onClick={onClose}
-              className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
-            >
-              ✕
-            </button>
-          )}
 
           <h3 className="text-3xl font-bold text-slate-800 mb-2 text-center dark:text-slate-50">
             Inicia Sesión
