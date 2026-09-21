@@ -46,6 +46,19 @@ function Cabezera() {
 
         <div className='flex items-center gap-4'>
 
+                      {usuario && (
+              <Link to="/Perfil">
+                <div className="relative">
+                  <img
+                    src={imagen}
+                    alt="Logo de la página"
+                    className="w-14 h-14 rounded-full object-cover border-2 border-sky-400/60 shadow-[0_0_15px_rgba(56,189,248,0.5)]"
+                  />
+                  <span className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-emerald-400 border-2 border-slate-900 rounded-full"></span>
+                </div>
+              </Link>
+            )}
+
           <Link to="/">
             <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
               Proyecto <span className="text-sky-400">React-705</span>
@@ -93,18 +106,7 @@ function Cabezera() {
               {tema === "claro" ? <Moon size={20} /> : <Sun size={20} />}
             </button>
 
-            {usuario && (
-              <Link to="/Perfil">
-                <div className="relative">
-                  <img
-                    src={imagen}
-                    alt="Logo de la página"
-                    className="w-10 h-10 rounded-full object-cover border-2 border-sky-400/60 shadow-[0_0_15px_rgba(56,189,248,0.5)]"
-                  />
-                  <span className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-emerald-400 border-2 border-slate-900 rounded-full"></span>
-                </div>
-              </Link>
-            )}
+
 
       </div>
       </div>

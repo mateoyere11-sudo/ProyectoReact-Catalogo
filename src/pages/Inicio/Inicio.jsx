@@ -42,9 +42,10 @@
               <p className="max-w-3xl text-slate-400 mb-8">
                 Durante este proyecto exploraremos componentes, navegación,
                 consumo de APIs, estilos y diferentes herramientas del
-                ecosistema de React.
+                ecosistema de React. Conoce lo realizado como, contacto, Diviertete y el catalogo
               </p>
-              <button
+              <Link 
+                to="/catalogo"
                 className="
                   text-white
                   font-semibold
@@ -55,14 +56,14 @@
                   bg-blue-500 transition delay-150 duration-300 ease-in-out hover:-translate-y-1 hover:scale-110 hover:bg-indigo-500
                 "
               >
-                Comenzar a aprender
-              </button>
+                Conocer
+              </Link>
             </div>
           </div>
         </section>
 
         {/* TECNOLOGÍAS */}
-        <section className="max-w-6xl mx-auto px-6 py-16 dark:bg-slate-800  ">
+        <section id="tecnologias" className="max-w-6xl mx-auto px-6 py-16 dark:bg-slate-800  ">
           <h2 className="text-3xl md:text-4xl font-bold text-center text-slate-800 dark:text-slate-50 mb-4">
             Tecnologías utilizadas
           </h2>
