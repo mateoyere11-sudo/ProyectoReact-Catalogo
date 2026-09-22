@@ -46,7 +46,7 @@ function Cabezera() {
 
         <div className='flex items-center gap-4'>
 
-                      {usuario && (
+            {usuario && (
               <Link to="/Perfil">
                 <div className="relative">
                   <img

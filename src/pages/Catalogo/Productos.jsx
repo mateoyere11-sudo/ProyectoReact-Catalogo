@@ -102,7 +102,7 @@ function Productos() {
                 ))}
               </div>
 
-              {/* El paginador solo se muestra si hay más de 1 página */}
+              {/* El paginador solo se va mostrar si hay más de 1 página */}
               {totalPaginas > 1 && (
                 <nav className="flex justify-center items-center gap-2 mt-10">
                   {/* Botón "Anterior": resta 1 a la página actual.
